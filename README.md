@@ -15,3 +15,7 @@ docker-compose up -d
 `
 
 * Open `https://localhost/`, it'll redirect and open `https://localhost/auth/login?flow=<flow-id>`
+
+
+# Notes
+* Because using self-signed certs, if you're using Chrome, please type `thisisunsafe` to bypass checking from Chrome
