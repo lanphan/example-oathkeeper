@@ -1,0 +1,111 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/index.html:/app/html:ro
+    networks:
+      - intranet
+
+  adminer:
+    image: adminer
+    ports:
+      - '8080:8080'
+    networks:
+      - intranet
+
+  mysqld:
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+    networks:
+      - intranet
+
+  kratos-migrate:
+    depends_on:
+      - mysqld
+    image: oryd/kratos:v0.7.0-alpha.1-sqlite
+    environment:
+      - DSN=mysql://root:secret@tcp(mysqld:3306)/mysql?max_conns=20&max_idle_conns=4
+    volumes:
+      - type: bind
+        source: ./kratos
+        target: /etc/config/kratos
+    command: -c /etc/config/kratos/kratos.yml migrate sql -e --yes
+    restart: on-failure
+    networks:
+      - intranet
+
+  kratos:
+    depends_on:
+      - kratos-migrate
+    image: oryd/kratos:v0.7.0-alpha.1-sqlite
+    ports:
+      - '4433:4433' # public
+      - '4434:4434' # admin
+    restart: unless-stopped
+    environment:
+      - DSN=mysql://root:secret@tcp(mysqld:3306)/mysql?max_conns=20&max_idle_conns=4
+      - LOG_LEVEL=trace
+      - SERVE_PUBLIC_BASE_URL=https://localhost/.ory/kratos/public/
+    command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
+    volumes:
+      - type: bind
+        source: ./kratos
+        target: /etc/config/kratos
+    networks:
+      - intranet
+
+  oathkeeper:
+    image: oryd/oathkeeper:v0.38
+    depends_on:
+      - kratos
+    ports:
+      - 4455:4455 # public
+      - 4456:4456
+    command:
+      serve api -c "/etc/config/oathkeeper/oathkeeper.yml"
+    environment:
+      - LOG_LEVEL=debug
+    restart: on-failure
+    networks:
+      - intranet
+    volumes:
+      - ./oathkeeper:/etc/config/oathkeeper
+
+  kratos-selfservice-ui-node:
+    image: oryd/kratos-selfservice-ui-node:v0.7.0-alpha.1
+    environment:
+      - KRATOS_PUBLIC_URL=http://kratos:4433/
+      - KRATOS_ADMIN_URL=http://kratos:4434/
+      - PORT=4435
+      - KRATOS_BROWSER_URL=https://localhost/.ory/kratos/public
+      - JWKS_URL=http://oathkeeper:4456/.well-known/jwks.json
+      - SECURITY_MODE=jwks
+    networks:
+      - intranet
+    restart: on-failure
+
+  mailslurper:
+    image: oryd/mailslurper:latest-smtps
+    ports:
+      - '4436:4436'
+      - '4437:4437'
+    networks:
+      - intranet
+
+  tool:
+    image: praqma/network-multitool:latest
+    networks:
+      - intranet
+    
+networks:
+  intranet:
+  public:

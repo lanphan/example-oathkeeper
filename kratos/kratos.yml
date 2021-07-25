@@ -1,0 +1,84 @@
+version: v0.4.6-alpha.1
+
+dsn: memory
+
+serve:
+  public:
+    base_url: http://kratos:4433/
+    cors:
+      enabled: true
+  admin:
+    base_url: http://kratos:4434/
+
+selfservice:
+  default_browser_return_url: https://localhost/
+  whitelisted_return_urls:
+    - https://localhost
+
+  methods:
+    password:
+      enabled: true
+
+  flows:
+    error:
+      ui_url: https://localhost/error
+
+    settings:
+      ui_url: https://localhost/settings
+      privileged_session_max_age: 15m
+
+    recovery:
+      enabled: true
+      ui_url: https://localhost/recovery
+
+    verification:
+      enabled: true
+      ui_url: https://localhost/verify
+      after:
+        default_browser_return_url: https://localhost/
+
+    logout:
+      after:
+        default_browser_return_url: https://localhost/auth/login
+
+    login:
+      ui_url: https://localhost/auth/login
+      lifespan: 10m
+
+    registration:
+      lifespan: 10m
+      ui_url: https://localhost/auth/registration
+      after:
+        password:
+          hooks:
+            -
+              hook: session
+
+log:
+  level: debug
+  format: text
+  leak_sensitive_values: true
+
+secrets:
+  cookie:
+    - PLEASE-CHANGE-ME-I-AM-VERY-INSECURE
+
+session:
+  cookie:
+    domain: localhost
+    same_site: Lax
+
+hashers:
+  argon2:
+    parallelism: 1
+    memory: 128MB
+    iterations: 2
+    salt_length: 16
+    key_length: 16
+
+identity:
+  default_schema_url: file:///etc/config/kratos/identity.schema.json
+
+courier:
+  smtp:
+    connection_uri: smtps://test:test@mailslurper:1025/?skip_ssl_verify=true
