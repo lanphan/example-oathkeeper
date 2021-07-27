@@ -54,7 +54,7 @@ services:
     environment:
       - DSN=mysql://root:secret@tcp(mysqld:3306)/mysql?max_conns=20&max_idle_conns=4
       - LOG_LEVEL=trace
-      - SERVE_PUBLIC_BASE_URL=https://localhost/.ory/kratos/public/
+      - SERVE_PUBLIC_BASE_URL=https://127.0.0.1/.ory/kratos/public/
     command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
     volumes:
       - type: bind
@@ -86,7 +86,7 @@ services:
       - KRATOS_PUBLIC_URL=http://kratos:4433/
       - KRATOS_ADMIN_URL=http://kratos:4434/
       - PORT=4435
-      - KRATOS_BROWSER_URL=https://localhost/.ory/kratos/public
+      - KRATOS_BROWSER_URL=https://127.0.0.1/.ory/kratos/public
       - JWKS_URL=http://oathkeeper:4456/.well-known/jwks.json
       - SECURITY_MODE=jwks
     networks:

@@ -30,7 +30,7 @@ errors:
     redirect:
       enabled: true
       config:
-        to: https://localhost/auth/login
+        to: https://127.0.0.1/auth/login
         when:
           -
             error:
@@ -83,7 +83,7 @@ mutators:
   id_token:
     enabled: true
     config:
-      issuer_url: https://localhost/
+      issuer_url: https://127.0.0.1/
       jwks_url: file:///etc/config/oathkeeper/id_token.jwks.json
       claims: |
         {

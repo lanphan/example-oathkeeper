@@ -4,7 +4,7 @@
   #   preserve_host: true
   #   url: "http://kratos-selfservice-ui-node:4435"
   match:
-    url: "http://localhost/<{,debug,dashboard,settings}>"
+    url: "http://127.0.0.1/<{,debug,dashboard,settings}>"
     methods:
       - GET
   authenticators:
@@ -17,4 +17,4 @@
   # errors:
   #   - handler: redirect
   #     config:
-  #       to: https://localhost/auth/login
+  #       to: https://127.0.0.1/auth/login
