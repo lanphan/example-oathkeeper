@@ -31,7 +31,7 @@ services:
   kratos-migrate:
     depends_on:
       - mysqld
-    image: oryd/kratos:v0.7.0-alpha.1-sqlite
+    image: oryd/kratos:v0.7.1-alpha.1-sqlite
     environment:
       - DSN=mysql://root:secret@tcp(mysqld:3306)/mysql?max_conns=20&max_idle_conns=4
     volumes:
@@ -46,7 +46,7 @@ services:
   kratos:
     depends_on:
       - kratos-migrate
-    image: oryd/kratos:v0.7.0-alpha.1-sqlite
+    image: oryd/kratos:v0.7.1-alpha.1-sqlite
     ports:
       - '4433:4433' # public
       - '4434:4434' # admin
@@ -81,7 +81,7 @@ services:
       - ./oathkeeper:/etc/config/oathkeeper
 
   kratos-selfservice-ui-node:
-    image: oryd/kratos-selfservice-ui-node:v0.7.0-alpha.1
+    image: oryd/kratos-selfservice-ui-node:v0.7.1-alpha.1
     environment:
       - KRATOS_PUBLIC_URL=http://kratos:4433/
       - KRATOS_ADMIN_URL=http://kratos:4434/
