@@ -43,6 +43,12 @@ services:
     networks:
       - intranet
 
+  spa:
+    image: spa-nextjs
+    restart: unless-stopped
+    networks:
+      - intranet
+
   kratos:
     depends_on:
       - kratos-migrate
@@ -80,26 +86,26 @@ services:
     volumes:
       - ./oathkeeper:/etc/config/oathkeeper
 
-  kratos-selfservice-ui-node:
-    image: oryd/kratos-selfservice-ui-node:v0.7.1-alpha.1
-    environment:
-      - KRATOS_PUBLIC_URL=http://kratos:4433/
-      - KRATOS_ADMIN_URL=http://kratos:4434/
-      - PORT=4435
-      - KRATOS_BROWSER_URL=https://127.0.0.1/.ory/kratos/public
-      - JWKS_URL=http://oathkeeper:4456/.well-known/jwks.json
-      - SECURITY_MODE=jwks
-    networks:
-      - intranet
-    restart: on-failure
+  # kratos-selfservice-ui-node:
+  #   image: oryd/kratos-selfservice-ui-node:v0.7.1-alpha.1
+  #   environment:
+  #     - KRATOS_PUBLIC_URL=http://kratos:4433/
+  #     - KRATOS_ADMIN_URL=http://kratos:4434/
+  #     - PORT=4435
+  #     - KRATOS_BROWSER_URL=https://127.0.0.1/.ory/kratos/public
+  #     - JWKS_URL=http://oathkeeper:4456/.well-known/jwks.json
+  #     - SECURITY_MODE=jwks
+  #   networks:
+  #     - intranet
+  #   restart: on-failure
 
-  mailslurper:
-    image: oryd/mailslurper:latest-smtps
-    ports:
-      - '4436:4436'
-      - '4437:4437'
-    networks:
-      - intranet
+  # mailslurper:
+  #   image: oryd/mailslurper:latest-smtps
+  #   ports:
+  #     - '4436:4436'
+  #     - '4437:4437'
+  #   networks:
+  #     - intranet
 
   tool:
     image: praqma/network-multitool:latest
